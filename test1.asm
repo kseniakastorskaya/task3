@@ -1,0 +1,5 @@
+# Test program from specification
+LOAD_CONST 146, 456
+READ 679, 835
+WRITE 716, 603
+BITREV 313, 398
