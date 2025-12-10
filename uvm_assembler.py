@@ -101,6 +101,15 @@ class UVMMemory:
         self.mem[addr] = value
 
 
+def bitreverse(value: int, bits: int = 32) -> int:
+    """
+    Побитовый реверс числа value с указанным количеством бит.
+    """
+    bstr = f"{value:0{bits}b}"
+    rev = int(bstr[::-1], 2)
+    return rev
+
+
 def run_interpreter(program: List[Dict], mem_size=1024) -> UVMMemory:
     memory = UVMMemory(mem_size)
     for instr in program:
@@ -117,7 +126,8 @@ def run_interpreter(program: List[Dict], mem_size=1024) -> UVMMemory:
             memory.write(C, value)
         elif A == 34:  # BITREV
             val = memory.read(C)
-            memory.write(B, int("{:032b}".format(val)[::-1], 2))
+            rev_val = bitreverse(val, bits=32)
+            memory.write(B, rev_val)
         else:
             raise ValueError(f"Unknown opcode {A}")
     return memory
@@ -158,9 +168,10 @@ def main():
         with open(args.assemble[1], "wb") as f:
             f.write(outbytes)
         if args.test:
+            print("Assembled program (intermediate representation):")
             for instr in program:
                 print(
-                    f"Line {instr['line']:>3}: {instr['mnemonic']:12} A={instr['A']}, B={instr['B']}, C={instr['C']}, bytes={', '.join(f'0x{b:02X}' for b in instr['bytes'])}"
+                    f"Line {instr['line']:>3}: {instr['mnemonic']:12} A={instr['A']}, B={instr['B']}, C={instr['C']} -> {', '.join(f'0x{b:02X}' for b in instr['bytes'])}"
                 )
         print(f"Wrote {len(outbytes)} bytes to {args.assemble[1]}")
 
