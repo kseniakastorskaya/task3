@@ -6,8 +6,12 @@ MEM_SIZE = 1024
 mem = [0] * MEM_SIZE
 
 def bitreverse(value, bits=32):
-    return int(f"{value:0{bits}b}"[::-1], 2)
-
+    """
+    Побитовый реверс числа value с указанным количеством бит (по умолчанию 32).
+    """
+    bstr = f"{value:0{bits}b}"
+    rev = int(bstr[::-1], 2)
+    return rev
 
 def execute(program):
     for op, b, c in program:
@@ -22,6 +26,7 @@ def execute(program):
             mem[c] = mem[b]
 
         elif op == "bitrev":
+            # Используем АЛУ для побитового реверса
             mem[b] = bitreverse(mem[c])
 
         else:
@@ -38,7 +43,7 @@ def dump_memory_xml(start, end):
     return ET.tostring(root, encoding="unicode")
 
 def main():
-    parser = argparse.ArgumentParser(description="UVM Interpreter (stage 2)")
+    parser = argparse.ArgumentParser(description="UVM Interpreter (stage 3)")
     parser.add_argument(
         "--path", "-p", required=True, help="Path to intermediate representation file"
     )
@@ -46,7 +51,7 @@ def main():
         "--dump", "-d", required=True, help="Path to XML memory dump file"
     )
     parser.add_argument(
-        "--range", "-r", required=True, help="Memory range to dump, e.g. 0-16"
+        "--range", "-r", required=True, help="Memory range to dump, e.g. 0-32"
     )
 
     args = parser.parse_args()
